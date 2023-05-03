@@ -11,5 +11,26 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Setup Docker build
-      uses: docker/setup-buildx-action@v2.5.0 
+      uses: docker/setup-buildx-action@v2.5.0
+      
+      # Baixar o artefato gerado no go.yml
+    - name: Download a build artifact
+      uses: actions/download-artifact@v2.1.1
+      with:
+        name: api_go
+        
+    # Fazer o login no docker hub
+    - name: Docker login
+      uses: docker/login-action@v2.1.0
+      with:
+        username: alyssondss42
+        password: ${{ secrets.DOCKER_HUB_SENHA}}
+        
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4.0.0
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: alyssondss42/go_ci:${{github.ref_name}}
       
